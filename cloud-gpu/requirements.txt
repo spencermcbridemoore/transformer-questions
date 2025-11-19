@@ -24,3 +24,8 @@ pytest-cov>=4.1.0
 ipywidgets>=8.0.0  # Interactive widgets for Jupyter
 tqdm>=4.66.0  # Progress bars
 
+# Vast.ai automation
+vastai-sdk>=0.2.0  # Vast.ai API client
+paramiko>=3.0.0  # SSH client for remote execution
+transformers>=4.30.0  # HuggingFace transformers
+
