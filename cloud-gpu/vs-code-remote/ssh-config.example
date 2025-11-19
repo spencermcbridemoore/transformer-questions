@@ -1,0 +1,21 @@
+# SSH Configuration for Remote GPU Access
+# Copy this to ~/.ssh/config and update with your actual host details
+
+Host gpu-remote
+    HostName your-remote-ip-or-domain
+    User your-username
+    Port 22
+    IdentityFile ~/.ssh/your-private-key
+    # Optional: Keep connection alive
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+
+# Example for Hyperbolic-style setup:
+# Host hyperbolic-h100
+#     HostName 123.45.67.89
+#     User ubuntu
+#     Port 22
+#     IdentityFile ~/.ssh/hyperbolic_key
+#     ServerAliveInterval 60
+#     ServerAliveCountMax 3
+
