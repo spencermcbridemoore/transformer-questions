@@ -25,6 +25,53 @@ transformer-questions/
 
 Complete setup for running Jupyter notebooks on remote H100 GPUs (like Hyperbolic). Supports both VS Code Remote and Standalone Jupyter workflows, with pytest for testing GPU functionality.
 
+## Environment Setup
+
+This repository uses environment variables for API keys and secrets. Never commit these directly to the repository.
+
+### Setup API Keys
+
+1. **Copy the template file**:
+   ```bash
+   # Windows (PowerShell)
+   Copy-Item .env.example .env
+   
+   # Linux/Mac
+   cp .env.example .env
+   ```
+
+2. **Edit `.env`** and add your actual API keys:
+   ```
+   VAST_API_KEY=your_actual_vast_api_key_here
+   GITHUB_TOKEN=your_actual_github_token_here
+   ```
+
+3. **The `.env` file is gitignored** - it will never be committed to the repository.
+
+### Available API Keys
+
+- **VAST_API_KEY**: For vast.ai API access (used by vastai-sdk)
+  - Get your key from: https://vast.ai/console/account
+  - The vastai-sdk automatically reads this from environment variables
+
+- **GITHUB_TOKEN**: For GitHub API access (optional)
+  - Get from: https://github.com/settings/tokens
+  - Used for creating repositories programmatically
+
+### Using Environment Variables
+
+Most tools (like vastai-sdk) will automatically read environment variables. You can also set them manually:
+
+**Windows (PowerShell):**
+```powershell
+$env:VAST_API_KEY = "your_key_here"
+```
+
+**Linux/Mac:**
+```bash
+export VAST_API_KEY="your_key_here"
+```
+
 ## Extracting a Project
 
 When a project is ready to stand on its own:
