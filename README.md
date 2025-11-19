@@ -72,6 +72,30 @@ $env:VAST_API_KEY = "your_key_here"
 export VAST_API_KEY="your_key_here"
 ```
 
+## Testing
+
+This repository uses pytest for testing. Tests are located in the `tests/` directory.
+
+### Running Tests
+
+Run all tests:
+```bash
+pytest tests/ -v
+```
+
+Run specific test files:
+```bash
+pytest tests/test_vast_ai.py -v        # Vast.ai API tests
+pytest cloud-gpu/tests/ -v              # GPU tests
+```
+
+### Test Categories
+
+- **Vast.ai API Tests** (`tests/test_vast_ai.py`): Tests for Vast.ai API connection, account info, and instance search
+- **GPU Tests** (`cloud-gpu/tests/`): Tests for GPU detection, CUDA, and PyTorch functionality
+
+Tests automatically skip if required dependencies (API keys, GPU, etc.) are not available, so they're safe to run on any machine.
+
 ## Extracting a Project
 
 When a project is ready to stand on its own:
