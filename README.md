@@ -9,6 +9,7 @@ Each project lives in its own directory:
 ```
 transformer-questions/
 ├── cloud-gpu/          # Remote GPU Jupyter setup
+├── model-library/      # Base and SFT/Instruct model pairs library
 ├── project-2/          # Future project...
 └── project-3/          # Future project...
 ```
@@ -24,6 +25,10 @@ transformer-questions/
 ### [cloud-gpu](./cloud-gpu/)
 
 Complete setup for running Jupyter notebooks on remote H100 GPUs (like Hyperbolic). Supports both VS Code Remote and Standalone Jupyter workflows, with pytest for testing GPU functionality.
+
+### [model-library](./model-library/)
+
+Curated library of base and SFT/Instruct model pairs (Qwen, Llama, DeepSeek, NVIDIA). Includes utilities for filtering by size, family, and getting model information.
 
 ## Environment Setup
 
