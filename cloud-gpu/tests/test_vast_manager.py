@@ -32,23 +32,34 @@ class TestVastManager:
     def test_search_instances(self, vast_api_key):
         """Test searching for instances."""
         manager = VastManager(api_key=vast_api_key)
-        offers = manager.search_instances(
-            gpu_type="A100",
-            max_price_per_hour=2.0,
-            limit=10
-        )
-        assert isinstance(offers, list)
-        # May be empty, that's ok - just testing API works
+        try:
+            offers = manager.search_instances(
+                gpu_type="A100",
+                max_price_per_hour=2.0,
+                limit=10
+            )
+            assert isinstance(offers, list)
+            # May be empty, that's ok - just testing API works
+        except ValueError as e:
+            # No instances found is acceptable - just means none available
+            if "No A100 instances found" in str(e):
+                pytest.skip(f"No A100 instances available for testing: {e}")
+            raise
     
     @pytest.mark.vast
     def test_select_cheapest(self, vast_api_key):
         """Test selecting cheapest offer."""
         manager = VastManager(api_key=vast_api_key)
-        offers = manager.search_instances(
-            gpu_type="A100",
-            max_price_per_hour=2.0,
-            limit=10
-        )
+        try:
+            offers = manager.search_instances(
+                gpu_type="A100",
+                max_price_per_hour=2.0,
+                limit=10
+            )
+        except ValueError as e:
+            if "No A100 instances found" in str(e):
+                pytest.skip(f"No A100 instances available for testing: {e}")
+            raise
         
         if not offers:
             pytest.skip("No offers available for testing")
