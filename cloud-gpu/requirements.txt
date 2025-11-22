@@ -27,5 +27,8 @@ tqdm>=4.66.0  # Progress bars
 # Vast.ai automation
 vastai-sdk>=0.2.0  # Vast.ai API client
 paramiko>=3.0.0  # SSH client for remote execution
+python-dotenv>=1.0.0  # Environment variable management
 transformers>=4.30.0  # HuggingFace transformers
+accelerate>=0.20.0  # Model acceleration utilities
+datasets>=2.14.0  # HuggingFace datasets for evaluation
 
