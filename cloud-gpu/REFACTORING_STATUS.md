@@ -22,9 +22,9 @@
 - ✅ Refactored SSH connection: Using RemoteExecutor
 - ✅ Refactored script upload: Using SCP instead of heredoc strings
 - ✅ Refactored environment setup: Execute uploaded setup script
-- ⚠️ **TODO**: Model evaluation section (cell ~14) - still has multiline string
-- ⚠️ **TODO**: Cleanup section (cells ~16-18) - still uses old cleanup_instance()
-- ⚠️ **TODO**: Summary sections (cells ~19-20) - need updates
+- ✅ Model evaluation section: Execute uploaded evaluate_model.py script
+- ✅ Cleanup section: Use manager.destroy_instance() with cost calculation
+- ✅ Summary sections: Updated to reflect new architecture
 
 ## 🔧 Remaining Work
 
