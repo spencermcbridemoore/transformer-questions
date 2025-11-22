@@ -41,79 +41,103 @@ class VastManager:
         self,
         gpu_type: str = "A100",
         max_price_per_hour: float = 1.5,
-        limit: int = 50
+        limit: int = 50,
+        gpu_types: Optional[List[str]] = None
     ) -> List[Dict[str, Any]]:
         """
         Search for available GPU instances.
         
         Args:
-            gpu_type: GPU type to search for (e.g., "A100")
+            gpu_type: GPU type to search for (e.g., "A100"). Ignored if gpu_types is provided.
             max_price_per_hour: Maximum price per hour in USD
             limit: Maximum number of offers to return
+            gpu_types: List of GPU types to search for (e.g., ["A100", "H100"])
             
         Returns:
             List of offer dictionaries matching criteria
         """
-        print(f"Searching for {gpu_type} instances under ${max_price_per_hour}/hour...")
+        # Support multiple GPU types
+        if gpu_types is None:
+            gpu_types = [gpu_type]
         
-        # Search for instances
-        offers = self.client.search_offers(
-            query=f"gpu_name:{gpu_type}",
-            order="score",
-            limit=limit
-        )
+        gpu_types_str = " or ".join(gpu_types)
+        print(f"Searching for {gpu_types_str} instances under ${max_price_per_hour}/hour...")
         
-        # Process offers - handle different return formats
-        if offers is None:
-            raise ValueError("No offers returned from API")
+        # Search for instances - search for all types and combine results
+        all_offers = []
+        for gpu in gpu_types:
+            offers = self.client.search_offers(
+                query=f"gpu_name:{gpu}",
+                order="score",
+                limit=limit
+            )
+            
+            # Process offers - handle different return formats
+            if offers is None:
+                continue
+            
+            if isinstance(offers, list):
+                available_offers = offers
+            elif isinstance(offers, dict):
+                available_offers = offers.get('offers', offers.get('instances', []))
+                if not available_offers:
+                    available_offers = [offers] if offers else []
+            else:
+                available_offers = []
+            
+            all_offers.extend(available_offers)
         
-        if isinstance(offers, list):
-            available_offers = offers
-        elif isinstance(offers, dict):
-            available_offers = offers.get('offers', offers.get('instances', []))
-            if not available_offers:
-                available_offers = [offers] if offers else []
-        else:
-            available_offers = []
+        # Remove duplicates by offer ID
+        seen_ids = set()
+        unique_offers = []
+        for offer in all_offers:
+            if isinstance(offer, dict):
+                offer_id = offer.get('id')
+                if offer_id and offer_id not in seen_ids:
+                    seen_ids.add(offer_id)
+                    unique_offers.append(offer)
         
-        print(f"[INFO] Total offers received: {len(available_offers)}")
+        print(f"[INFO] Total offers received: {len(unique_offers)}")
         
-        if not available_offers:
-            raise ValueError("No offers returned from API")
+        if not unique_offers:
+            raise ValueError(f"No offers returned from API for {gpu_types_str}")
         
         # Filter by price and GPU type
         filtered_offers = []
-        for offer in available_offers:
+        for offer in unique_offers:
             if not isinstance(offer, dict):
                 continue
             
             price = offer.get('dph_total', offer.get('dph', offer.get('price', float('inf'))))
             gpu_name = offer.get('gpu_name', '')
             
-            if gpu_type.upper() in gpu_name.upper() and price < max_price_per_hour:
+            # Check if GPU name contains any of the target types
+            matches_gpu = any(gpu.upper() in gpu_name.upper() for gpu in gpu_types)
+            
+            if matches_gpu and price < max_price_per_hour:
                 filtered_offers.append(offer)
         
         print(f"[INFO] Filtered offers matching criteria: {len(filtered_offers)}")
         
         if not filtered_offers:
             # Fallback: try without strict price filter
-            print(f"[WARNING] No {gpu_type} instances found under ${max_price_per_hour}/hour")
+            print(f"[WARNING] No {gpu_types_str} instances found under ${max_price_per_hour}/hour")
             print("Trying fallback search...")
             
             fallback_offers = []
-            for offer in available_offers:
+            for offer in unique_offers:
                 if not isinstance(offer, dict):
                     continue
                 gpu_name = offer.get('gpu_name', '')
-                if gpu_type.upper() in gpu_name.upper():
+                if any(gpu.upper() in gpu_name.upper() for gpu in gpu_types):
                     fallback_offers.append(offer)
             
             if fallback_offers:
                 filtered_offers = fallback_offers
-                print(f"[INFO] Found {len(filtered_offers)} {gpu_type} offers (without price filter)")
+                print(f"[INFO] Found {len(filtered_offers)} {gpu_types_str} offers (without price filter)")
         
         if not filtered_offers:
-            raise ValueError(f"No {gpu_type} instances found")
+            raise ValueError(f"No {gpu_types_str} instances found")
         
         # Sort by price ascending
         filtered_offers.sort(key=lambda x: x.get('dph_total', x.get('dph', x.get('price', float('inf')))))
