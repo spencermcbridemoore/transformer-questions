@@ -17,6 +17,7 @@ eggs/
 .eggs/
 lib/
 lib64/
+!cloud-gpu/lib/  # Allow our cloud-gpu library
 parts/
 sdist/
 var/
