@@ -36,6 +36,10 @@ These tests are designed to work on **any system with a GPU**, including your lo
 - **GPU Detection Tests**: Tests `nvidia-smi` and GPU detection
 - **CUDA Tests**: Tests CUDA compiler and version
 - **PyTorch GPU Tests**: Tests PyTorch CUDA functionality and tensor operations
+- **Library Module Tests**: Tests for cloud-gpu library modules
+  - `test_vast_manager.py`: VastManager instance lifecycle management
+  - `test_remote_executor.py`: RemoteExecutor SSH/SCP utilities
+  - `test_model_evaluator.py`: ModelEvaluator helper utilities
 
 ## Running Specific Tests
 

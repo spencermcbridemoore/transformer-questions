@@ -1,7 +1,13 @@
-"""Pytest configuration and fixtures for GPU tests."""
+"""Pytest configuration and fixtures for cloud-gpu tests."""
 import pytest
 import subprocess
 import sys
+import os
+from pathlib import Path
+
+# Add lib directory to path for imports
+lib_path = Path(__file__).parent.parent / 'lib'
+sys.path.insert(0, str(lib_path))
 
 
 def has_nvidia_smi():
@@ -42,6 +48,14 @@ def pytorch_cuda_available():
         return False
 
 
+def has_vast_api_key():
+    """Check if Vast.ai API key is available."""
+    from dotenv import load_dotenv
+    load_dotenv()
+    api_key = os.getenv('VAST_API_KEY')
+    return api_key and api_key != 'your_vast_api_key_here'
+
+
 @pytest.fixture(scope="session")
 def gpu_available():
     """Fixture to check if GPU is available."""
@@ -66,9 +80,23 @@ def pytorch_cuda_available_fixture():
     return pytorch_cuda_available()
 
 
+@pytest.fixture(scope="session")
+def vast_api_key():
+    """Fixture to get Vast.ai API key."""
+    if not has_vast_api_key():
+        pytest.skip("VAST_API_KEY not found in environment")
+    from dotenv import load_dotenv
+    load_dotenv()
+    api_key = os.getenv('VAST_API_KEY')
+    return api_key
+
+
 # Skip decorators for convenience
 skip_if_no_gpu = pytest.mark.skipif(not has_nvidia_smi(), reason="No GPU available")
 skip_if_no_cuda = pytest.mark.skipif(not has_cuda(), reason="No CUDA available")
 skip_if_no_pytorch = pytest.mark.skipif(not has_pytorch(), reason="PyTorch not installed")
 skip_if_no_pytorch_cuda = pytest.mark.skipif(not pytorch_cuda_available(), reason="PyTorch CUDA not available")
+skip_if_no_vast_api = pytest.mark.skipif(not has_vast_api_key(), reason="Vast.ai API key not found")
 
+# Markers
+vast_marker = pytest.mark.vast
